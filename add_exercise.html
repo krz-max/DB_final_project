@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Add Exercise</title>
+</head>
+
+<body>
+    <h2>Add Exercise</h2>
+    <form action="{{ url_for('add_exercise') }}" method="post">
+        <label for="exerciseName">Exercise Name:</label>
+        <input type="text" id="exerciseName" name="exerciseName" required><br><br>
+        <label for="calories_per_kg">Calories Burned Per Hour (Cal/kg):</label>
+        <input type="text" id="calories_per_kg" name="calories_per_kg" required><br><br>
+        <button type="submit">Add Exercise</button>
+    </form>
+    <br>
+    <a href="{{ url_for('record_exercise') }}">Back</a>
+</body>
+
+</html>
