@@ -233,6 +233,7 @@ def get_foods():
 def record_food():
     return render_template('login.html', User=User.query.all())
 
+
 @app.route('/add_exercise', methods=['GET', 'POST'])
 def add_exercise():
     if request.method == 'POST':
@@ -264,7 +265,7 @@ def record_exercise():
 def submit_exercises():
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
+        user_id = 0
         exercises = data.get('exercises')
 
         for exercise in exercises:
