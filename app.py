@@ -223,15 +223,24 @@ def compare_users_records():
 # TODO
 @app.route('/add_food', methods=['GET', 'POST'])
 def add_food():
-    return render_template('login.html', User=User.query.all())
+    if request.method=='POST':
+        food_name=request.form['foodName']
+        new_food=Food(
+            name=food_name
+        )
+        db.session.add(new_food)
+        db.session.commit()
+    return render_template('add_food.html')
 # TODO
 @app.route('/api/foods')
 def get_foods():
-    return render_template('login.html', User=User.query.all())
+    foods=Food.query.all()
+    food_list=[{'id':food.id,'name':food.name} for food in foods]
+    return {'foods':food_list}
 # TODO
 @app.route('/record_food', methods=['GET', 'POST'])
 def record_food():
-    return render_template('login.html', User=User.query.all())
+    return render_template('food_record.html')
 
 
 @app.route('/add_exercise', methods=['GET', 'POST'])
