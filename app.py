@@ -228,7 +228,21 @@ def add_food():
         new_food=Food(
             name=food_name
         )
+
         db.session.add(new_food)
+        db.session.commit()
+        food_calories=request.form['foodCalories']
+        food_carbohydrates=request.form['foodCarbohydrates']
+        food_protein=request.form['foodProtein']
+        food_fat=request.form['foodFat']
+        new_nutrient=Nutrient(
+            food_id=new_food.id,
+            calories=food_calories,
+            carbohydrates=food_carbohydrates,
+            protein=food_protein,
+            fat=food_fat
+        )
+        db.session.add(new_nutrient)
         db.session.commit()
     return render_template('add_food.html')
 # TODO

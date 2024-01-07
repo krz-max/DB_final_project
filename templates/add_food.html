@@ -10,7 +10,18 @@
     <form action="{{ url_for('add_food') }}" method="post">
         <label for="foodName">Food Name:</label>
         <input type="text" id="foodName" name="foodName" required><br><br>
-        <button type="submit">Add Food</button>
+        <label for="foodCalories">Food Calories:</label>
+        <input type="text" id="foodCalories" name="foodCalories" required><br><br>
+
+        <label for="foodCarbohydrates">Food Carbohydrates:</label>
+        <input type="text" id="foodCarbohydrates" name="foodCarbohydrates" required><br><br>
+       
+        <label for="foodProtein">Food Protein:</label>
+        <input type="text" id="foodProtein" name="foodProtein" required><br><br>
+
+        <label for="foodFat">Food Fat:</label>
+        <input type="text" id="foodFat" name="foodFat" required><br><br>
+	<button type="submit">Add Food</button>
     </form>
     <br>
     <a href="{{ url_for('record_food') }}">Back</a>
