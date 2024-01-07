@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Record</title>
+    <style>
+        #foodSelect {
+            width: 200px;
+            overflow-y: auto;
+            max-height: 150px;
+        }
+    </style>
+    <script>
+        async function fetchFoodOptions() {
+            try {
+                const response = await fetch('/api/foods');
+                const data = await response.json();
+
+                if (data && data.foods) {
+                    console.log('Food options fetched successfully!');
+                    const foodSelect = document.getElementById("foodSelect");
+
+                    data.foods.forEach(food => {
+                        const option = document.createElement("option");
+                        option.value = food.id;
+                        option.text = food.name;
+                        foodSelect.add(option);
+                    });
+                }
+                console.log(data.foods)
+            } catch (error) {
+                console.error('Error fetching food options:', error);
+            }
+        }
+        
+        function addFood() {
+            var foodSelect = document.getElementById("foodSelect");
+            var foodTable = document.getElementById("foodTable");
+            var selectedOption = foodSelect.options[foodSelect.selectedIndex];
+
+            var newRow = foodTable.insertRow();
+            var newCell1 = newRow.insertCell();
+            var newCell2 = newRow.insertCell();
+
+            var deleteButton = document.createElement("button");
+            deleteButton.innerHTML = "Delete";
+            deleteButton.onclick = function () {
+                newRow.remove();
+            };
+
+            newCell1.innerHTML = foodSelect.options[foodSelect.selectedIndex].text;
+            newCell2.appendChild(deleteButton);
+
+            foodSelect.selectedIndex = 0;
+        }
+
+        function redirectToNewFoodPage() {
+            window.location.href = "{{ url_for('add_food') }}";
+        }
+
+        function submitFoods() {
+            var foodTable = document.getElementById("foodTable");
+            var rows = foodTable.rows;
+
+            var foods = [];
+
+            for (var i = 1; i < rows.length; i++) {
+                var foodName = rows[i].cells[0].innerHTML;
+                var foodId = rows[i].dataset.foodId;
+
+                foods.push({
+                    food_id: foodId,
+                    name: foodName
+                });
+            }
+            console.log(foods);
+            var data = {
+                user_id: 0, // 这里应该更改为实际的用户ID
+                foods: foods,
+            };
+            fetch('/submit_foods', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+            clearTable();
+        }
+
+        function clearTable() {
+            var foodTable = document.getElementById("foodTable");
+            var rows = foodTable.rows;
+
+            for (var i = rows.length - 1; i >= 1; i--) {
+                rows[i].remove();
+            }
+
+            foodTable.innerHTML = "<tr><th>Food</th></tr>";
+        }
+    </script>
+</head>
+
+<body onload="fetchFoodOptions()">
+    <h1>Food Record</h1>
+    <p>User ID: {{ user_id }}</p>
+    <label for="foodSelect">Choose Food:</label>
+    <select id="foodSelect"></select>
+    <br>
+
+    <button onclick="redirectToNewFoodPage()">Add Food</button>
+    <br>
+
+    <button onclick="addFood()">Record Food</button>
+    <br>
+
+    <table id="foodTable" border="1">
+        <tr>
+            <th>Food</th>
+        </tr>
+    </table>
+
+    <br>
+    <button onclick="submitFoods()">Submit Food Data</button>
+</body>
+
+</html>
+

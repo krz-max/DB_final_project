@@ -35,6 +35,7 @@ class User(db.Model):
 class UserCaloriesRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    food_id = db.Column(db.Integer, db.ForeignKey('food.id'), nullable=False)
     date = db.Column(db.Date, default=datetime.utcnow, nullable=False)
     calories_ingest = db.Column(db.Integer, nullable=False)
 
@@ -145,6 +146,7 @@ def view_past_week_records():
                            detailed_food_records=detailed_food_records
                            )
 
+# TODO: user_id完成後要檢查
 @app.route('/compare_user_records', methods=['GET'])
 def compare_users_records():
     user_id = request.args.get('user_id')
@@ -216,19 +218,29 @@ def compare_users_records():
         user_records=user_records,
         similar_users=similar_users,
     )
+    
 
+# TODO
 @app.route('/add_food', methods=['GET', 'POST'])
 def add_food():
-    return render_template('login.html', User=User.query.all())
+    if request.method=='POST':
+        food_name=request.form['foodName']
+        new_food=Food(
+            name=food_name
+        )
+        db.session.add(new_food)
+        db.session.commit()
+    return render_template('add_food.html')
 # TODO
 @app.route('/api/foods')
 def get_foods():
-    return render_template('login.html', User=User.query.all())
+    foods=Food.query.all()
+    food_list=[{'id':food.id,'name':food.name} for food in foods]
+    return {'foods':food_list}
 # TODO
 @app.route('/record_food', methods=['GET', 'POST'])
 def record_food():
-    return render_template('login.html', User=User.query.all())
-
+    return render_template('food_record.html')
 
 @app.route('/add', methods=['POST'])
 def add_item():
