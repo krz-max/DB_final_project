@@ -1,0 +1,77 @@
+<!-- user_home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- ... -->
+    <title>Home</title>
+</head>
+
+<body>
+    <h1>Home</h1>
+
+    <h2>Information</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <td>{{ user.id }}</td>
+        </tr>
+        <tr>
+            <th>Height (cm)</th>
+            <td>{{ user.height }}</td>
+        </tr>
+        <tr>
+            <th>Weight (kg)</th>
+            <td>{{ user.weight }}</td>
+        </tr>
+        <tr>
+            <th>Daily Recommended Calories</th>
+            <td>{{ 35 * user.weight }} kcal</td>
+        </tr>
+        <!-- Todo -->
+        <tr>
+            <th>Today's Calories Ingest</th>
+            <td>{{ today_calories_ingest }}</td>
+        </tr>
+        <!-- Todo -->
+        <tr>
+            <th>Today's Calories Consumption</th>
+            <td>{{ today_calories_consumption }}</td>
+        </tr>
+    </table>
+    
+
+    <h2>Actions</h2>
+    <ul>
+        <!-- 紀錄飲食 -->
+        <form action="/record_food" method="get">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input type="hidden" name="weight" value="{{ user.weight }}">
+            <input type="hidden" name="height" value="{{ user.height }}">
+            <button type="submit">紀錄飲食</button>
+        </form>
+
+        <!-- 紀錄運動 -->
+        <form action="/record_exercise" method="get">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input type="hidden" name="weight" value="{{ user.weight }}">
+            <input type="hidden" name="height" value="{{ user.height }}">
+            <button type="submit">紀錄運動</button>
+        </form>
+
+        <!-- 查看過去一周紀錄 -->
+        <form action="/view_past_week_records" method="get">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit">查看過去一周紀錄</button>
+        </form>
+
+        <!-- 對比其他使用者資料 -->
+        <form action="/compare_user_records" method="get">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit">對比其他使用者資料</button>
+        </form>
+    </ul>
+</body>
+
+</html>

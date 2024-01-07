@@ -1,0 +1,63 @@
+<!-- view_past_week_records.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- ... -->
+    <title>Past Week Records</title>
+</head>
+
+<body>
+    <h1>Last Week Summary</h1>
+    <table id="userWeekRecordTable" border="1">
+        <tr>
+            <th>日期</th>
+            <th>時間 (分鐘)</th>
+            <th>消耗熱量 (大卡)</th>
+            <th>攝取熱量 (大卡)</th>
+        </tr>
+        {% for record in join_records %}
+        <tr>
+            <td>{{ record.date }}</td>
+            <td>{{ record.total_time }}</td>
+            <td>{{ record.total_calories_consumption }}</td>
+            <td>{{ record.total_calories_ingest }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h1>Detailed Past Week Food Records</h1>
+    <table id="userDetailedFoodRecordTable" border="1">
+        <tr>
+            <th>日期</th>
+            <th>食物</th>
+            <th>攝取熱量 (大卡)</th>
+        </tr>
+        {% for record in detailed_food_records %}
+        <tr>
+            <td>{{ record.date }}</td>
+            <td>{{ record.name }}</td>
+            <td>{{ record.calories }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h1>Detailed Past Week Exercise Records</h1>
+    <table id="userDetailedExerciseRecordTable" border="1">
+        <tr>
+            <th>日期</th>
+            <th>運動</th>
+            <th>時間 (分鐘)</th>
+            <th>消耗熱量 (大卡)</th>
+        </tr>
+        {% for record in detailed_exercise_records %}
+        <tr>
+            <td>{{ record.date }}</td>
+            <td>{{ record.name }}</td>
+            <td>{{ record.time }}</td>
+            <td>{{ record.calories_consumption }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

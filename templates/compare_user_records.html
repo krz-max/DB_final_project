@@ -1,0 +1,55 @@
+<!-- compare_users_records.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... -->
+    <title>Compare Users Records</title>
+</head>
+<body>
+    <h1>Compare Users Records</h1>
+
+    <h2>Average Records for Similar Users</h2>
+    <table id="similarUserWeekRecordTable" border="1">
+        <tr>
+            <th>日期</th>
+            <th>時間 (分鐘)</th>
+            <th>消耗熱量 (大卡)</th>
+            <th>攝取熱量 (大卡)</th>
+        </tr>
+        {% for record in avg_records %}
+        <tr>
+            <td>{{ record.date }}</td>
+            <td>{{ record.avg_time }}</td>
+            <td>{{ record.avg_calories_consumption }}</td>
+            <td>{{ record.avg_calories_ingest }}</td>
+        </tr>
+        {% endfor %}
+    </table>    
+
+    <h2>Current User's Past Records</h2>
+    <table id="userWeekRecordTable" border="1">
+        <tr>
+            <th>日期</th>
+            <th>時間 (分鐘)</th>
+            <th>消耗熱量 (大卡)</th>
+            <th>攝取熱量 (大卡)</th>
+        </tr>
+        {% for record in user_records %}
+        <tr>
+            <td>{{ record.date }}</td>
+            <td>{{ record.total_time }}</td>
+            <td>{{ record.total_calories_consumption }}</td>
+            <td>{{ record.total_calories_ingest }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Similar Users</h2>
+    <ul>
+        {% for user in similar_users %}
+            <li>ID: {{ user.id }}, Height: {{ user.height }}, Weight: {{ user.weight }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

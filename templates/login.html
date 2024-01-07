@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>User List</h1>
+    <ul>
+        {% for item in User %}
+            <li>User ID: {{ item.id }}, Weight: {{ item.weight }}, Height: {{ item.height }}</li>
+        {% endfor %}
+    </ul>
+    <h1>Login</h1>
+    <form method="post" action="/">
+        <label for="user_id">Enter your user ID:</label>
+        <input type="text" name="user_id" required>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
