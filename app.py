@@ -242,6 +242,16 @@ def get_foods():
 def record_food():
     return render_template('food_record.html')
 
+@app.route('/add', methods=['POST'])
+def add_item():
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+        weight = request.form['weight']
+        height = request.form['height']
+        new_item = User(weight=weight, height=height)
+        db.session.add(new_item)
+        db.session.commit()
+        return redirect(url_for('index'))
 
 @app.route('/add_exercise', methods=['GET', 'POST'])
 def add_exercise():
@@ -265,16 +275,16 @@ def get_exercises():
 
 @app.route('/record_exercise')
 def record_exercise():
-    user_id = request.args.get('user_id')
-    weight = request.args.get('weight')
-    height = request.args.get('height')
+    user_id = request.args.get('user_id',type=int)
+    weight = request.args.get('weight',type=float)
+    height = request.args.get('height',type=float)
     return render_template('exercise_record.html', user_id=user_id, weight=weight, height=height)
 
 @app.route('/submit_exercises', methods=['POST'])
 def submit_exercises():
     try:
         data = request.get_json()
-        user_id = 0
+        user_id = data.get('user_id')
         exercises = data.get('exercises')
 
         for exercise in exercises:
@@ -294,3 +304,36 @@ def submit_exercises():
         print("Error processing exercises:", str(e))
         db.session.rollback()
         return jsonify({'error': 'Failed to process exercises'}), 500
+
+@app.route('/exercise_history')
+def exercise_history():
+    user_id = request.args.get('user_id', type=int)
+
+    if user_id is not None:
+        results = db.session.query(UserExerciseRecord.id,
+                                   UserExerciseRecord.user_id,
+                                   UserExerciseRecord.date,
+                                   Activity.name,
+                                   UserExerciseRecord.time,
+                                   UserExerciseRecord.calories_consumption).\
+            join(Activity, UserExerciseRecord.activity_id == Activity.id).\
+            filter(UserExerciseRecord.user_id == user_id).all()
+    else:
+        results = []
+
+    return render_template('exercise_history.html', results=results)
+
+@app.route('/delete_record/<int:record_id>', methods=['POST'])
+def delete_record(record_id):
+    try:
+        record = UserExerciseRecord.query.get(record_id)
+        if record:
+            db.session.delete(record)
+            db.session.commit()
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Record not found'}), 404
+    except Exception as e:
+        print("Error deleting record:", str(e))
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Failed to delete record'}), 500

@@ -13,6 +13,12 @@
         }
     </style>
     <script>
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        var userId = urlParams.get('user_id');
+        var weight = urlParams.get('weight');
+        var height = urlParams.get('height');
+
         async function fetchExerciseOptions() {
             try {
                 const response = await fetch('/api/exercises');
@@ -60,7 +66,7 @@
             newCell1.innerHTML = exerciseSelect.options[exerciseSelect.selectedIndex].text;
             newCell2.innerHTML = exerciseDuration.value;
             var caloriesPerKg =  selectedExercise.calories_per_kg;
-            newCell3.innerHTML = exerciseDuration.value / 60 * caloriesPerKg * 70 ;//改weight
+            newCell3.innerHTML = exerciseDuration.value / 60 * caloriesPerKg * weight ;//改weight
             newCell4.appendChild(deleteButton);
             newRow.dataset.activityId = selectedExercise.id;
 
@@ -93,7 +99,7 @@
             }
             console.log(exercises);
             var data = {
-                user_id: 0,//改user_id
+                user_id: userId,//改user_id
                 exercises: exercises,
             };
             fetch('/submit_exercises', {
