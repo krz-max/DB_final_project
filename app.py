@@ -5,7 +5,6 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.sql import func
 import pandas as pd
 from sqlalchemy import inspect
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///your_database.db'
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
@@ -36,8 +35,8 @@ class User(db.Model):
 class UserCaloriesRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    food_id = db.Column(db.Integer, db.ForeignKey('food.id'), nullable=False)
     date = db.Column(db.Date, default=datetime.utcnow, nullable=False)
+    food_id = db.Column(db.Integer, db.ForeignKey('food.id'), nullable=False)
     calories_ingest = db.Column(db.Integer, nullable=False)
 
 class UserExerciseRecord(db.Model):
@@ -542,14 +541,14 @@ def submit_foods():
         foods = data.get('foods')
 
         for food_data in foods:
-            food_id=food_data['foodId']
-            calories_ingest = food_data['calories']
-            new_calories_record = UserCaloriesRecord(
-                user_id=user_id,
-                food_id=food_id, 
-                calories_ingest=calories_ingest
+            #food_id=food_data['foodId']
+            #calories_ingest = food_data['calories']
+            new_calories_record2= UserCaloriesRecord(
+                user_id = user_id,
+                food_id = food_data['foodId'], 
+                calories_ingest=food_data['calories']
             )
-            db.session.add(new_calories_record)
+            db.session.add(new_calories_record2)
 
         db.session.commit()
         return jsonify({'message': 'Foods submitted successfully'})
