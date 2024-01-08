@@ -534,6 +534,34 @@ def add_exercise():
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('add_exercise.html')
+@app.route('/submit_foods',methods=['POST'])
+def submit_foods():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        foods = data.get('foods')
+
+        for food_data in foods:
+            # 假设food_data包含food_id和calories_ingest
+            food_id=food_data['food_id']
+            calories_ingest = food_data['calories']
+
+            # 创建并保存食物摄入记录
+            new_calories_record = UserCaloriesRecord(
+                user_id=user_id,
+                food_id=food_id,
+                
+                calories_ingest=calories_ingest
+            )
+            db.session.add(new_calories_record)
+
+        db.session.commit()
+        return jsonify({'message': 'Foods submitted successfully'})
+
+    except Exception as e:
+        print("Error processing foods:", str(e))
+        db.session.rollback()
+        return jsonify({'error': 'Failed to process foods'}), 500
 
 @app.route('/api/exercises')
 def get_exercises():

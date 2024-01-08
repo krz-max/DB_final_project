@@ -13,6 +13,7 @@
         }
     </style>
     <script>
+	var userId=urlParams.get('user_id')
         async function fetchFoodOptions() {
             try {
                 const response = await fetch('/api/foods');
@@ -54,6 +55,7 @@
             var newCell4 = newRow.insertCell();
 	    var newCell5 = newRow.insertCell();
             var newCell6 = newRow.insertCell();
+	    
 
             var deleteButton = document.createElement("button");
             deleteButton.innerHTML = "Delete";
@@ -63,12 +65,11 @@
 
             newCell1.innerHTML = foodSelect.options[foodSelect.selectedIndex].text;
             newCell2.innerHTML = foodData.calories
-            newCell3.innerHTML = foodData.carbonhydrates
+            newCell3.innerHTML = foodData.carbohydrates
             newCell4.innerHTML = foodData.protein
             newCell5.innerHTML = foodData.fat
-            
             newCell6.appendChild(deleteButton);
-
+            newRow.dataset.foodId=foodData.id;
             foodSelect.selectedIndex = 0;
         }
 
@@ -83,17 +84,24 @@
             var foods = [];
 
             for (var i = 1; i < rows.length; i++) {
-                var foodName = rows[i].cells[0].innerHTML;
-                var foodId = rows[i].dataset.foodId;
-
+      		var foodName = rows[i].cells[0].innerHTML;
+        	var calories = rows[i].cells[1].innerHTML;
+        	var carbohydrates = rows[i].cells[2].innerHTML; 
+        	var protein = rows[i].cells[3].innerHTML; 
+        	var fat = rows[i].cells[4].innerHTML;
+		var foodId=rows[i].dataset.foodId;
                 foods.push({
-                    food_id: foodId,
-                    name: foodName
-                });
+		    food_id:foodId,
+            	    name: foodName,
+                    calories: calories,
+                    carbohydrates: carbohydrates,
+                    protein: protein,
+                    fat: fat
+       	        });
             }
             console.log(foods);
             var data = {
-                user_id: 0, // 这里应该更改为实际的用户ID
+                user_id:userId,
                 foods: foods,
             };
             fetch('/submit_foods', {
@@ -121,7 +129,7 @@
                 rows[i].remove();
             }
 
-            foodTable.innerHTML = "<tr><th>Food</th></tr>";
+            foodTable.innerHTML = "<tr><th>Food</th><th>Calories</th><th>Carbohydrates</th><th>Protein</th><th>Fat</th></tr>"
         }
     </script>
 </head>
