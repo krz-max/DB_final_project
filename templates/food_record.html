@@ -13,6 +13,8 @@
         }
     </style>
     <script>
+	var queryString=window.location.search;
+	var urlParams=new URLSearchParams(queryString);
 	var userId=urlParams.get('user_id')
         async function fetchFoodOptions() {
             try {
@@ -29,6 +31,7 @@
                         option.text = food.name;
                         foodSelect.add(option);
 			option.dataset.food = JSON.stringify({
+				id:food.id,
            	 		calories: food.calories,
             			carbohydrates: food.carbohydrates,
             			protein: food.protein,
@@ -55,7 +58,7 @@
             var newCell4 = newRow.insertCell();
 	    var newCell5 = newRow.insertCell();
             var newCell6 = newRow.insertCell();
-	    
+	  
 
             var deleteButton = document.createElement("button");
             deleteButton.innerHTML = "Delete";
@@ -69,6 +72,7 @@
             newCell4.innerHTML = foodData.protein
             newCell5.innerHTML = foodData.fat
             newCell6.appendChild(deleteButton);
+	    
             newRow.dataset.foodId=foodData.id;
             foodSelect.selectedIndex = 0;
         }
