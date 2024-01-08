@@ -40,10 +40,15 @@
             <td>{{ today_calories_consumption }}</td>
         </tr>
     </table>
-    
+
 
     <h2>Actions</h2>
     <ul>
+        <!-- 紀錄體重 -->
+        <form action="/record_weight" method="get">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit">紀錄體重</button>
+        </form>
         <!-- 紀錄飲食 -->
         <form action="/record_food" method="get">
             <input type="hidden" name="user_id" value="{{ user.id }}">
@@ -70,6 +75,10 @@
         <form action="/compare_user_records" method="get">
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <button type="submit">對比其他使用者資料</button>
+        </form>
+        <!-- 登出 -->
+        <form action="/" method="get">
+            <button type="submit">登出</button>
         </form>
     </ul>
 </body>
