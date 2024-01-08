@@ -2,43 +2,111 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- ... -->
     <title>Compare Users Records</title>
+    <!-- 在你的模板中 -->
+    <script>
+        function getRecords() {
+            var selectedDate = document.getElementById("selectedDate").value;
+            var user_id = {{ user_id }}/* 獲取使用者 ID 的程式碼 */;  // 請替換成實際的獲取使用者 ID 的方法
+            console.log(user_id);
+
+            // 使用 AJAX 向後端發送請求
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/get_similar_records?user_id=" + user_id + "&selectedDate=" + selectedDate, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // 在這裡處理後端返回的紀錄資料，更新前端頁面
+                    var records = JSON.parse(xhr.responseText);
+                    // 更新頁面的程式碼...
+                    var similarUserWeekRecordTable = document.getElementById("similarUserWeekRecordTable");
+                    var userWeekRecordTable = document.getElementById("userWeekRecordTable");
+                    var similar_users = records.similar_users;
+                    var avg_records = records.avg_records;
+                    var user_records = records.user_records;
+
+                    // Update Similar User Table
+                    var similarUserWeekRecordTableRows = similarUserWeekRecordTable.rows.length;
+                    for (var i = similarUserWeekRecordTableRows - 1; i > 0; i--) {
+                        similarUserWeekRecordTable.deleteRow(i);
+                    }
+                    for (var i = 0; i < avg_records.length; i++) {
+                        var newRow = similarUserWeekRecordTable.insertRow();
+                        var newCell1 = newRow.insertCell();
+                        var newCell2 = newRow.insertCell();
+                        var newCell3 = newRow.insertCell();
+                        newCell1.innerHTML = avg_records[i].date;
+                        newCell2.innerHTML = avg_records[i].avg_calories_consumption;
+                        newCell3.innerHTML = avg_records[i].avg_calories_ingest;
+                        newCell3.innerHTML = avg_records[i].avg_calories_ingest !== null ? avg_records[i].avg_calories_ingest : 'None';
+                    }
+
+                    // Update User Table
+                    var userWeekRecordTableRows = userWeekRecordTable.rows.length;
+                    for (var i = userWeekRecordTableRows - 1; i > 0; i--) {
+                        userWeekRecordTable.deleteRow(i);
+                    }
+                    for (var i = 0; i < user_records.length; i++) {
+                        var newRow = userWeekRecordTable.insertRow();
+                        var newCell1 = newRow.insertCell();
+                        var newCell2 = newRow.insertCell();
+                        var newCell3 = newRow.insertCell();
+                        newCell1.innerHTML = user_records[i].date;
+                        newCell2.innerHTML = user_records[i].total_calories_consumption;
+                        newCell3.innerHTML = user_records[i].total_calories_ingest !== null ? user_records[i].total_calories_ingest : 'None';
+                    }
+
+                    // Update Similar Users
+                    var similarUsers = document.getElementById("similarUsers");
+                    similarUsers.innerHTML = "";
+                    for (var i = 0; i < similar_users.length; i++) {
+                        var newLi = document.createElement("li");
+                        newLi.innerHTML = "ID: " + similar_users[i].id + ", Height: " + similar_users[i].height + ", Weight: " + similar_users[i].weight;
+                        similarUsers.appendChild(newLi);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
 </head>
+
 <body>
     <h1>Compare Users Records</h1>
-
+    <!-- 在你的模板中 -->
+    <form id="dateForm">
+        <label for="selectedDate">選擇日期:</label>
+        <input type="date" id="selectedDate" name="selectedDate">
+        <button type="button" onclick="getRecords()">查看紀錄</button>
+    </form>
     <h2>Average Records for Similar Users</h2>
     <table id="similarUserWeekRecordTable" border="1">
         <tr>
             <th>日期</th>
-            <th>時間 (分鐘)</th>
             <th>消耗熱量 (大卡)</th>
             <th>攝取熱量 (大卡)</th>
         </tr>
         {% for record in avg_records %}
         <tr>
             <td>{{ record.date }}</td>
-            <td>{{ record.avg_time }}</td>
             <td>{{ record.avg_calories_consumption }}</td>
             <td>{{ record.avg_calories_ingest }}</td>
         </tr>
         {% endfor %}
-    </table>    
+    </table>
 
     <h2>Current User's Past Records</h2>
     <table id="userWeekRecordTable" border="1">
         <tr>
             <th>日期</th>
-            <th>時間 (分鐘)</th>
             <th>消耗熱量 (大卡)</th>
             <th>攝取熱量 (大卡)</th>
         </tr>
         {% for record in user_records %}
         <tr>
             <td>{{ record.date }}</td>
-            <td>{{ record.total_time }}</td>
             <td>{{ record.total_calories_consumption }}</td>
             <td>{{ record.total_calories_ingest }}</td>
         </tr>
@@ -48,8 +116,10 @@
     <h2>Similar Users</h2>
     <ul>
         {% for user in similar_users %}
-            <li>ID: {{ user.id }}, Height: {{ user.height }}, Weight: {{ user.weight }}</li>
+        <li>ID: {{ user.id }}, Height: {{ user.height }}, Weight: {{ user.weight }}</li>
         {% endfor %}
     </ul>
+    <a href="{{ url_for('user_home', user_id=user_id) }}">Home</a>
 </body>
+
 </html>
