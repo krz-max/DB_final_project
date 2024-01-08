@@ -494,9 +494,16 @@ def add_food():
 # TODO
 @app.route('/api/foods')
 def get_foods():
-    foods=Food.query.all()
-    food_list=[{'id':food.id,'name':food.name} for food in foods]
-    return {'foods':food_list}
+    foods=db.session.query(Food, Nutrient).join(Nutrient, Food.id == Nutrient.food_id).all()
+    food_list=[{
+        'id': food.id,
+        'name': food.name,
+        'calories': nutrient.calories,
+        'carbohydrates': nutrient.carbohydrates,
+        'protein': nutrient.protein,
+        'fat': nutrient.fat
+    } for food,nutrient in foods]
+    return jsonify({'foods':food_list})
 # TODO
 @app.route('/record_food', methods=['GET', 'POST'])
 def record_food():

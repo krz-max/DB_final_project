@@ -27,6 +27,13 @@
                         option.value = food.id;
                         option.text = food.name;
                         foodSelect.add(option);
+			option.dataset.food = JSON.stringify({
+           	 		calories: food.calories,
+            			carbohydrates: food.carbohydrates,
+            			protein: food.protein,
+            			fat: food.fat
+        		});
+			foodSelect.add(option);
                     });
                 }
                 console.log(data.foods)
