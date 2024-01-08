@@ -1,4 +1,4 @@
-#!/home/kkmelon/DBMS_project/venv/bin/python3
+#!/home/albert/DB_final_project/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

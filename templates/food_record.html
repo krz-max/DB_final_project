@@ -46,10 +46,14 @@
             var foodSelect = document.getElementById("foodSelect");
             var foodTable = document.getElementById("foodTable");
             var selectedOption = foodSelect.options[foodSelect.selectedIndex];
-
+	    var foodData = JSON.parse(selectedOption.dataset.food);
             var newRow = foodTable.insertRow();
             var newCell1 = newRow.insertCell();
             var newCell2 = newRow.insertCell();
+	    var newCell3 = newRow.insertCell();
+            var newCell4 = newRow.insertCell();
+	    var newCell5 = newRow.insertCell();
+            var newCell6 = newRow.insertCell();
 
             var deleteButton = document.createElement("button");
             deleteButton.innerHTML = "Delete";
@@ -58,7 +62,12 @@
             };
 
             newCell1.innerHTML = foodSelect.options[foodSelect.selectedIndex].text;
-            newCell2.appendChild(deleteButton);
+            newCell2.innerHTML = foodData.calories
+            newCell3.innerHTML = foodData.carbonhydrates
+            newCell4.innerHTML = foodData.protein
+            newCell5.innerHTML = foodData.fat
+            
+            newCell6.appendChild(deleteButton);
 
             foodSelect.selectedIndex = 0;
         }
@@ -133,6 +142,10 @@
     <table id="foodTable" border="1">
         <tr>
             <th>Food</th>
+	    <th>Calories</th>
+	    <th>Carbohydrates</th>
+	    <th>Protein</th>
+	    <th>Fat</th>
         </tr>
     </table>
 
