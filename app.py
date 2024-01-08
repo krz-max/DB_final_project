@@ -126,7 +126,26 @@ def register(user_id):
 @app.route('/user_home/<int:user_id>')
 def user_home(user_id):
     user = User.query.get(user_id)
-    return render_template('user_home.html', user=user)
+    today_calories_consumption = (
+        db.session.query(
+            func.sum(UserExerciseRecord.calories_consumption)
+        )
+        .filter(UserExerciseRecord.user_id == user_id)
+        .filter(UserExerciseRecord.date == datetime.utcnow().date())
+        .scalar()
+    )
+    today_calories_ingest = (
+        db.session.query(
+            func.sum(UserCaloriesRecord.calories_ingest)
+        )
+        .filter(UserCaloriesRecord.user_id == user_id)
+        .filter(UserCaloriesRecord.date == datetime.utcnow().date())
+        .scalar()
+    )
+    return render_template('user_home.html',
+                            user=user,
+                            today_calories_consumption=today_calories_consumption,
+                            today_calories_ingest=today_calories_ingest)
 
 @app.route('/record_weight', methods=['GET', 'POST'])
 def record_weight():
