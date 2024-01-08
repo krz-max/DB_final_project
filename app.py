@@ -542,15 +542,11 @@ def submit_foods():
         foods = data.get('foods')
 
         for food_data in foods:
-            # 假设food_data包含food_id和calories_ingest
-            food_id=food_data['food_id']
+            food_id=food_data['foodId']
             calories_ingest = food_data['calories']
-
-            # 创建并保存食物摄入记录
             new_calories_record = UserCaloriesRecord(
                 user_id=user_id,
-                food_id=food_id,
-                
+                food_id=food_id, 
                 calories_ingest=calories_ingest
             )
             db.session.add(new_calories_record)
