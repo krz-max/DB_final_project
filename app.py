@@ -34,10 +34,10 @@ class User(db.Model):
 
 class UserCaloriesRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.Date, default=datetime.utcnow, nullable=False)
     food_id = db.Column(db.Integer, db.ForeignKey('food.id'), nullable=False)
     calories_ingest = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class UserExerciseRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -209,15 +209,15 @@ def get_records():
     )
     # TODO
     detailed_food_records = (
-        # db.session.query(
-        #     UserCaloriesRecord.date,
-        #     Food.name,
-        #     UserCaloriesRecord.calories_ingest
-        # )
-        # .join(Food, UserCaloriesRecord.food_id == Food.id)
-        # .filter(UserCaloriesRecord.user_id == user_id)
-        # .filter(UserCaloriesRecord.date >= selected_date)
-        # .order_by(UserCaloriesRecord.date.asc())
+         db.session.query(
+             UserCaloriesRecord.date,
+             Food.name,
+             UserCaloriesRecord.calories_ingest
+         )
+         .join(Food, UserCaloriesRecord.food_id == Food.id)
+         .filter(UserCaloriesRecord.user_id == user_id)
+         .filter(UserCaloriesRecord.date >= selected_date)
+         .order_by(UserCaloriesRecord.date.asc())
     )
     
     detailed_exercise_records = (
@@ -294,15 +294,15 @@ def view_past_week_records():
     )
     # TODO
     detailed_food_records = (
-        # db.session.query(
-        #     UserCaloriesRecord.date,
-        #     Food.name,
-        #     UserCaloriesRecord.calories_ingest
-        # )
-        # .join(Food, UserCaloriesRecord.food_id == Food.id)
-        # .filter(UserCaloriesRecord.user_id == user_id)
-        # .filter(UserCaloriesRecord.date >= selected_date)
-        # .order_by(UserCaloriesRecord.date.asc())
+         db.session.query(
+             UserCaloriesRecord.date,
+             Food.name,
+             UserCaloriesRecord.calories_ingest
+         )
+         .join(Food, UserCaloriesRecord.food_id == Food.id)
+         .filter(UserCaloriesRecord.user_id == user_id)
+         .filter(UserCaloriesRecord.date >= selected_date)
+         .order_by(UserCaloriesRecord.date.asc())
     )
     
     detailed_exercise_records = (

@@ -58,7 +58,7 @@
                         var newCell3 = newRow.insertCell();
                         newCell1.innerHTML = detailed_food_records[i].date;
                         newCell2.innerHTML = detailed_food_records[i].name;
-                        newCell3.innerHTML = detailed_food_records[i].calories;
+                        newCell3.innerHTML = detailed_food_records[i].calories_ingest;
                     }
 
                     // Update Detailed Exercise Record Table
@@ -132,7 +132,7 @@
         <tr>
             <td>{{ record.date }}</td>
             <td>{{ record.name }}</td>
-            <td>{{ record.calories }}</td>
+            <td>{{ record.calories_ingest }}</td>
         </tr>
         {% endfor %}
     </table>
