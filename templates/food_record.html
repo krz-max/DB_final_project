@@ -49,6 +49,7 @@
         function addFood() {
             var foodSelect = document.getElementById("foodSelect");
             var foodTable = document.getElementById("foodTable");
+	    var foodnumber=document.getElementById("foodnumber");
             var selectedOption = foodSelect.options[foodSelect.selectedIndex];
 	    var foodData = JSON.parse(selectedOption.dataset.food);
             var newRow = foodTable.insertRow();
@@ -67,10 +68,10 @@
             };
 
             newCell1.innerHTML = foodSelect.options[foodSelect.selectedIndex].text;
-            newCell2.innerHTML = foodData.calories
-            newCell3.innerHTML = foodData.carbohydrates
-            newCell4.innerHTML = foodData.protein
-            newCell5.innerHTML = foodData.fat
+            newCell2.innerHTML = foodData.calories*foodnumber.value
+            newCell3.innerHTML = foodData.carbohydrates*foodnumber.value
+            newCell4.innerHTML = foodData.protein*foodnumber.value
+            newCell5.innerHTML = foodData.fat*foodnumber.value
             newCell6.appendChild(deleteButton);
 	    
             newRow.dataset.foodId=foodData.id;
@@ -147,7 +148,9 @@
 
     <button onclick="redirectToNewFoodPage()">Add Food</button>
     <br>
-
+    <label for="foodnumber">Number:</label>
+    <input type="number" id="foodnumber" min="0">
+    <br>
     <button onclick="addFood()">Record Food</button>
     <br>
 
