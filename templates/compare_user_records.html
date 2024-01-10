@@ -113,12 +113,6 @@
         {% endfor %}
     </table>
 
-    <h2>Similar Users</h2>
-    <ul>
-        {% for user in similar_users %}
-        <li>ID: {{ user.id }}, Height: {{ user.height }}, Weight: {{ user.weight }}</li>
-        {% endfor %}
-    </ul>
     <a href="{{ url_for('user_home', user_id=user_id) }}">Home</a>
 </body>
 

@@ -9,10 +9,10 @@
     <h1>Register</h1>
     <form method="post" action="{{ url_for('register', user_id=user_id) }}">
         <label for="weight">Enter your weight:</label>
-        <input type="text" name="weight" required>
+        <input type="number" name="weight" required>
         <label for="height">Enter your height:</label>
-        <input type="text" name="height" required>
-        <button type="submit">Register</button>
+        <input type="number" name="height" required>
+        <button onclick="register()">Register</button>
     </form>
 </body>
 </html>
