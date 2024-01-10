@@ -81,16 +81,25 @@
     {% endif %}
 
     <script>
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        var userId = urlParams.get('user_id');
         document.addEventListener("DOMContentLoaded", function() {
+            // 获取所有日期元素
             var dateElements = document.querySelectorAll('td:nth-child(3)');
+
+            // 创建一个 Set 来存储不重复的日期
             var uniqueDates = new Set();
 
+            // 遍历日期元素并将唯一的日期添加到 Set 中
             dateElements.forEach(function(dateElement) {
                 uniqueDates.add(dateElement.textContent.trim());
             });
 
+            // 获取选择框元素
             var selectDate = document.getElementById('selectDate');
 
+            // 将唯一的日期添加为选择框的选项
             uniqueDates.forEach(function(date) {
                 var option = document.createElement('option');
                 option.value = date;
@@ -99,6 +108,7 @@
             });
         });
 
+        // 过滤函数
         function filterByDate() {
             var selectedDate = document.getElementById('selectDate').value;
             var dateElements = document.querySelectorAll('td:nth-child(3)');
@@ -137,5 +147,6 @@
             }
         }
     </script>
+    <a href="{{ url_for('user_home', user_id=user_id) }}">Home</a>
 </body>
 </html>

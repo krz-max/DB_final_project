@@ -612,7 +612,7 @@ def exercise_history():
     else:
         results = []
 
-    return render_template('exercise_history.html', results=results)
+    return render_template('exercise_history.html', results=results, user_id=user_id)
 
 @app.route('/delete_record/<int:record_id>', methods=['POST'])
 def delete_record(record_id):
