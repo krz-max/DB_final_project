@@ -5,7 +5,7 @@
 
 <head>
     <!-- ... -->
-    <title>Past Week Records</title>
+    <title>Past Records</title>
     <!-- 在你的模板中 -->
     <script>
         function getRecords() {
@@ -29,7 +29,7 @@
                     var detailed_exercise_records = records.detailed_exercise_records;
                     var detailed_weight_records = records.detailed_weight_records;
 
-                    // Update Week Record Table
+                    // Update Record Table
                     var userWeekRecordTableRows = userWeekRecordTable.rows.length;
                     for (var i = userWeekRecordTableRows - 1; i > 0; i--) {
                         userWeekRecordTable.deleteRow(i);
@@ -104,7 +104,7 @@
         <input type="date" id="selectedDate" name="selectedDate">
         <button type="button" onclick="getRecords()">查看紀錄</button>
     </form>
-    <h1>Last Week Summary</h1>
+    <h1>Summary</h1>
     <table id="userWeekRecordTable" border="1">
         <tr>
             <th>日期</th>
@@ -121,7 +121,7 @@
         </tr>
         {% endfor %}
     </table>
-    <h1>Detailed Past Week Food Records</h1>
+    <h1>Detailed Past Food Records</h1>
     <table id="userDetailedFoodRecordTable" border="1">
         <tr>
             <th>日期</th>
@@ -136,7 +136,7 @@
         </tr>
         {% endfor %}
     </table>
-    <h1>Detailed Past Week Exercise Records</h1>
+    <h1>Detailed Past Exercise Records</h1>
     <table id="userDetailedExerciseRecordTable" border="1">
         <tr>
             <th>日期</th>
@@ -153,11 +153,11 @@
         </tr>
         {% endfor %}
     </table>
-    <h1>Detailed Past Week Weight Records</h1>
+    <h1>Detailed Past Weight Records</h1>
     <table id="userDetailedWeightRecordTable" border="1">
         <tr>
             <th>日期</th>
-            <th>體重</th>
+            <th>體重 (公斤)</th>
         </tr>
         {% for record in detailed_weight_records %}
         <tr>
