@@ -5,6 +5,7 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.sql import func
 import pandas as pd
 from sqlalchemy import inspect
+from numpy import sort
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///your_database.db'
@@ -181,22 +182,37 @@ def get_records():
     else:
         selected_date = datetime.utcnow().date() - timedelta(days=7)
     
-    # 取得過去一周的運動紀錄，並結合 Activity 表格以獲取 Activity.name
     activity_alias = aliased(Activity)
-    join_records = (
+    food_record_by_date = (
+        db.session.query(
+            UserCaloriesRecord.date,
+            func.sum(UserCaloriesRecord.calories_ingest).label('total_calories_ingest')
+        )
+        .filter(UserCaloriesRecord.user_id == user_id)
+        .filter(UserCaloriesRecord.date >= selected_date)
+        .group_by(UserCaloriesRecord.date)
+        .order_by(UserCaloriesRecord.date.desc())
+        .all()
+    )
+    exercise_record_by_date = (
         db.session.query(
             UserExerciseRecord.date,
             func.sum(UserExerciseRecord.time).label('total_time'),
-            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption'),
-            func.sum(UserCaloriesRecord.calories_ingest).label('total_calories_ingest')
+            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption')
         )
-        .outerjoin(UserExerciseRecord, UserExerciseRecord.date == UserCaloriesRecord.date)  # Use outer join to include dates with no calories records
         .filter(UserExerciseRecord.user_id == user_id)
         .filter(UserExerciseRecord.date >= selected_date)
         .group_by(UserExerciseRecord.date)
         .order_by(UserExerciseRecord.date.desc())
         .all()
     )
+    join_records = []
+    for date in set(record.date for record in exercise_record_by_date):
+        total_time = sum(record.total_time for record in exercise_record_by_date if record.date == date)
+        total_calories_consumption = sum(record.total_calories_consumption for record in exercise_record_by_date if record.date == date)
+        total_calories_ingest = sum(record.total_calories_ingest for record in food_record_by_date if record.date == date)
+        join_records.append({'date': date, 'total_time': total_time, 'total_calories_consumption': total_calories_consumption, 'total_calories_ingest': total_calories_ingest})  
+    join_records = sorted(join_records, key=lambda x: x['date'], reverse=True)   
     
     detailed_weight_records = (
         db.session.query(
@@ -236,10 +252,10 @@ def get_records():
     )
     # 返回 JSON 格式的記錄，用於在前端進行更新
     return jsonify({
-        'join_records': [{'date': record.date.strftime('%Y-%m-%d'),
-                          'total_time': record.total_time,
-                          'total_calories_consumption': record.total_calories_consumption,
-                          'total_calories_ingest': record.total_calories_ingest}
+        'join_records': [{'date': record['date'].strftime('%Y-%m-%d'),
+                          'total_time': record['total_time'],
+                          'total_calories_consumption': record['total_calories_consumption'],
+                          'total_calories_ingest': record['total_calories_ingest']}
                          for record in join_records],
         'detailed_weight_records': [{'date': record.date.strftime('%Y-%m-%d'),
                                      'weight': record.weight}
@@ -268,20 +284,36 @@ def view_past_week_records():
     
     # 取得過去一周的運動紀錄，並結合 Activity 表格以獲取 Activity.name
     activity_alias = aliased(Activity)
-    join_records = (
+    food_record_by_date = (
+        db.session.query(
+            UserCaloriesRecord.date,
+            func.sum(UserCaloriesRecord.calories_ingest).label('total_calories_ingest')
+        )
+        .filter(UserCaloriesRecord.user_id == user_id)
+        .filter(UserCaloriesRecord.date >= selected_date)
+        .group_by(UserCaloriesRecord.date)
+        .order_by(UserCaloriesRecord.date.desc())
+        .all()
+    )
+    exercise_record_by_date = (
         db.session.query(
             UserExerciseRecord.date,
             func.sum(UserExerciseRecord.time).label('total_time'),
-            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption'),
-            func.sum(UserCaloriesRecord.calories_ingest).label('total_calories_ingest')
+            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption')
         )
-        .outerjoin(UserExerciseRecord, UserExerciseRecord.date == UserCaloriesRecord.date)  # Use outer join to include dates with no calories records
         .filter(UserExerciseRecord.user_id == user_id)
         .filter(UserExerciseRecord.date >= selected_date)
         .group_by(UserExerciseRecord.date)
         .order_by(UserExerciseRecord.date.desc())
         .all()
     )
+    join_records = []
+    for date in set(record.date for record in exercise_record_by_date):
+        total_time = sum(record.total_time for record in exercise_record_by_date if record.date == date)
+        total_calories_consumption = sum(record.total_calories_consumption for record in exercise_record_by_date if record.date == date)
+        total_calories_ingest = sum(record.total_calories_ingest for record in food_record_by_date if record.date == date)
+        join_records.append({'date': date, 'total_time': total_time, 'total_calories_consumption': total_calories_consumption, 'total_calories_ingest': total_calories_ingest})  
+    join_records = sorted(join_records, key=lambda x: x['date'], reverse=True)
     
     detailed_weight_records = (
         db.session.query(
@@ -293,7 +325,6 @@ def view_past_week_records():
         .order_by(WeightRecord.date.desc())
         .all()
     )
-    # TODO
     detailed_food_records = (
         db.session.query(
             UserCaloriesRecord.date,
@@ -342,20 +373,37 @@ def get_similar_records():
     # 取得目前使用者的身高和體重
     current_user = User.query.get(user_id)
     # 使用者的運動和攝取記錄
-    user_records = (
+    food_record_by_date = (
         db.session.query(
-            UserExerciseRecord.date,
-            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption'),
+            UserCaloriesRecord.date,
             func.sum(UserCaloriesRecord.calories_ingest).label('total_calories_ingest')
         )
-        .outerjoin(UserCaloriesRecord, UserExerciseRecord.date == UserCaloriesRecord.date)
+        .filter(UserCaloriesRecord.user_id == user_id)
+        .filter(UserCaloriesRecord.date >= selected_date)
+        .group_by(UserCaloriesRecord.date)
+        .order_by(UserCaloriesRecord.date.desc())
+        .all()
+    )
+    exercise_record_by_date = (
+        db.session.query(
+            UserExerciseRecord.date,
+            func.sum(UserExerciseRecord.time).label('total_time'),
+            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption')
+        )
         .filter(UserExerciseRecord.user_id == user_id)
         .filter(UserExerciseRecord.date >= selected_date)
         .group_by(UserExerciseRecord.date)
         .order_by(UserExerciseRecord.date.desc())
         .all()
     )
-
+    user_records = []
+    for date in set(record.date for record in exercise_record_by_date):
+        total_time = sum(record.total_time for record in exercise_record_by_date if record.date == date)
+        total_calories_consumption = sum(record.total_calories_consumption for record in exercise_record_by_date if record.date == date)
+        total_calories_ingest = sum(record.total_calories_ingest for record in food_record_by_date if record.date == date)
+        user_records.append({'date': date, 'total_time': total_time, 'total_calories_consumption': total_calories_consumption, 'total_calories_ingest': total_calories_ingest})
+    user_records = sorted(user_records, key=lambda x: x['date'], reverse=True)
+    
     # 找到相似使用者的條件
     similar_users = User.query.filter(
         User.id != user_id,
@@ -394,9 +442,9 @@ def get_similar_records():
                          'avg_calories_consumption': record['avg_calories_consumption'],
                          'avg_calories_ingest': record['avg_calories_ingest']}
                          for record in avg_records],
-        'user_records': [{'date': record.date.strftime('%Y-%m-%d'),
-                          'total_calories_consumption': record.total_calories_consumption,
-                          'total_calories_ingest': record.total_calories_ingest}
+        'user_records': [{'date': record['date'].strftime('%Y-%m-%d'),
+                          'total_calories_consumption': record['total_calories_consumption'],
+                          'total_calories_ingest': record['total_calories_ingest']}
                           for record in user_records],
         'similar_users': [{'id': user.id, 'weight': user.weight, 'height': user.height} for user in similar_users],
     })
@@ -415,20 +463,37 @@ def compare_users_records():
     # 取得目前使用者的身高和體重
     current_user = User.query.get(user_id)
     # 使用者的運動和攝取記錄
-    user_records = (
+    food_record_by_date = (
         db.session.query(
-            UserExerciseRecord.date,
-            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption'),
+            UserCaloriesRecord.date,
             func.sum(UserCaloriesRecord.calories_ingest).label('total_calories_ingest')
         )
-        .outerjoin(UserCaloriesRecord, UserExerciseRecord.date == UserCaloriesRecord.date)
+        .filter(UserCaloriesRecord.user_id == user_id)
+        .filter(UserCaloriesRecord.date >= selected_date)
+        .group_by(UserCaloriesRecord.date)
+        .order_by(UserCaloriesRecord.date.desc())
+        .all()
+    )
+    exercise_record_by_date = (
+        db.session.query(
+            UserExerciseRecord.date,
+            func.sum(UserExerciseRecord.time).label('total_time'),
+            func.sum(UserExerciseRecord.calories_consumption).label('total_calories_consumption')
+        )
         .filter(UserExerciseRecord.user_id == user_id)
         .filter(UserExerciseRecord.date >= selected_date)
         .group_by(UserExerciseRecord.date)
         .order_by(UserExerciseRecord.date.desc())
         .all()
     )
-
+    user_records = []
+    for date in set(record.date for record in exercise_record_by_date):
+        total_time = sum(record.total_time for record in exercise_record_by_date if record.date == date)
+        total_calories_consumption = sum(record.total_calories_consumption for record in exercise_record_by_date if record.date == date)
+        total_calories_ingest = sum(record.total_calories_ingest for record in food_record_by_date if record.date == date)
+        user_records.append({'date': date, 'total_time': total_time, 'total_calories_consumption': total_calories_consumption, 'total_calories_ingest': total_calories_ingest})
+    user_records = sorted(user_records, key=lambda x: x['date'], reverse=True)
+    
     # 找到相似使用者的條件
     similar_users = User.query.filter(
         User.id != user_id,

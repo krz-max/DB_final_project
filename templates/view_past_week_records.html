@@ -8,6 +8,81 @@
     <title>Past Records</title>
     <!-- 在你的模板中 -->
     <script>
+        function fetchPastRecords() {
+            var user_id = {{ user_id }}/* 獲取使用者 ID 的程式碼 */;  // 請替換成實際的獲取使用者 ID 的方法
+
+            // 使用 AJAX 向後端發送請求
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/view_past_week_records?user_id=" + user_id, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // 在這裡處理後端返回的紀錄資料，更新前端頁面
+                    var records = JSON.parse(xhr.responseText);
+                    // 更新頁面的程式碼...
+                    var userWeekRecordTable = document.getElementById("userWeekRecordTable");
+                    var userDetailedFoodRecordTable = document.getElementById("userDetailedFoodRecordTable");
+                    var userDetailedExerciseRecordTable = document.getElementById("userDetailedExerciseRecordTable");
+                    var userDetailedWeightRecordTable = document.getElementById("userDetailedWeightRecordTable");
+                    var join_records = records.join_records;
+                    var detailed_food_records = records.detailed_food_records;
+                    var detailed_exercise_records = records.detailed_exercise_records;
+                    var detailed_weight_records = records.detailed_weight_records;
+
+                    // Update Record Table
+                    var userWeekRecordTableRows = userWeekRecordTable.rows.length;
+                    for (var i = 0; i < join_records.length; i++) {
+                        var newRow = userWeekRecordTable.insertRow();
+                        var newCell1 = newRow.insertCell();
+                        var newCell2 = newRow.insertCell();
+                        var newCell3 = newRow.insertCell();
+                        var newCell4 = newRow.insertCell();
+                        newCell1.innerHTML = join_records[i].date;
+                        newCell2.innerHTML = join_records[i].total_time;
+                        newCell3.innerHTML = join_records[i].total_calories_consumption !== null ? join_records[i].total_calories_consumption : 'None';
+                        newCell4.innerHTML = join_records[i].total_calories_ingest !== null
+                            ? join_records[i].total_calories_ingest
+                            : 'None';
+                    }
+
+                    // Update Detailed Food Record Table
+                    var userDetailedFoodRecordTableRows = userDetailedFoodRecordTable.rows.length;
+                    for (var i = 0; i < detailed_food_records.length; i++) {
+                        var newRow = userDetailedFoodRecordTable.insertRow();
+                        var newCell1 = newRow.insertCell();
+                        var newCell2 = newRow.insertCell();
+                        var newCell3 = newRow.insertCell();
+                        newCell1.innerHTML = detailed_food_records[i].date;
+                        newCell2.innerHTML = detailed_food_records[i].name;
+                        newCell3.innerHTML = detailed_food_records[i].calories_ingest;
+                    }
+
+                    // Update Detailed Exercise Record Table
+                    var userDetailedExerciseRecordTableRows = userDetailedExerciseRecordTable.rows.length;
+                    for (var i = 0; i < detailed_exercise_records.length; i++) {
+                        var newRow = userDetailedExerciseRecordTable.insertRow();
+                        var newCell1 = newRow.insertCell();
+                        var newCell2 = newRow.insertCell();
+                        var newCell3 = newRow.insertCell();
+                        var newCell4 = newRow.insertCell();
+                        newCell1.innerHTML = detailed_exercise_records[i].date;
+                        newCell2.innerHTML = detailed_exercise_records[i].name;
+                        newCell3.innerHTML = detailed_exercise_records[i].time;
+                        newCell4.innerHTML = detailed_exercise_records[i].calories_consumption;
+                    }
+
+                    // Update Detailed Weight Record Table
+                    var userDetailedWeightRecordTableRows = userDetailedWeightRecordTable.rows.length;
+                    for (var i = 0; i < detailed_weight_records.length; i++) {
+                        var newRow = userDetailedWeightRecordTable.insertRow();
+                        var newCell1 = newRow.insertCell();
+                        var newCell2 = newRow.insertCell();
+                        newCell1.innerHTML = detailed_weight_records[i].date;
+                        newCell2.innerHTML = detailed_weight_records[i].weight;
+                    }
+                }
+            }
+            xhr.send();
+        }
         function getRecords() {
             var selectedDate = document.getElementById("selectedDate").value;
             var user_id = {{ user_id }}/* 獲取使用者 ID 的程式碼 */;  // 請替換成實際的獲取使用者 ID 的方法
@@ -97,7 +172,7 @@
     </script>
 </head>
 
-<body>
+<body onload="fetchPastRecords()">
     <!-- 在你的模板中 -->
     <form id="dateForm">
         <label for="selectedDate">選擇日期:</label>
@@ -114,10 +189,10 @@
         </tr>
         {% for record in join_records %}
         <tr>
-            <td>{{ record.date }}</td>
-            <td>{{ record.total_time }}</td>
-            <td>{{ record.total_calories_consumption }}</td>
-            <td>{{ record.total_calories_ingest }}</td>
+            <td>{{ record['date'] }}</td>
+            <td>{{ record['total_time'] }}</td>
+            <td>{{ record['total_calories_consumption'] }}</td>
+            <td>{{ record['total_calories_ingest'] }}</td>
         </tr>
         {% endfor %}
     </table>
