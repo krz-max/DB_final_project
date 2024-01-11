@@ -106,9 +106,9 @@
         </tr>
         {% for record in user_records %}
         <tr>
-            <td>{{ record.date }}</td>
-            <td>{{ record.total_calories_consumption }}</td>
-            <td>{{ record.total_calories_ingest }}</td>
+            <td>{{ record['date'] }}</td>
+            <td>{{ record['total_calories_consumption'] }}</td>
+            <td>{{ record['total_calories_ingest'] }}</td>
         </tr>
         {% endfor %}
     </table>
